@@ -5,6 +5,9 @@ This configuration is what should be used for parallel independent (shareded) im
 
 On top of this configuration, one must arrange that packets from the given per-thread range arrive on the right thread.
 
+%require
+click-buildtool provides umultithread
+
 %script
 
 $VALGRIND click -j 2 -e "
