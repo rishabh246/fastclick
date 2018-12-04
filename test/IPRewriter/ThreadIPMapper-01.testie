@@ -14,7 +14,7 @@ rw :: UDPRewriter(tmapper, drop);
 
 f1 :: FromIPSummaryDump(IN1, STOP true)
 	-> [0]rw;
-f2 :: FromIPSummaryDump(IN1, STOP true)
+f2 :: FromIPSummaryDump(IN1, STOP true, ACTIVE false)
 	-> [0]rw;
 
 
@@ -30,7 +30,7 @@ rw[1] -> PathSpinlock -> ToIPSummaryDump(OUT2, FIELDS thread src sport dst dport
 
 StaticThreadSched(f1 0, f2 1, ret1 0, ret2 1);
 
-DriverManager(pause, pause, write ret1.active true, pause, write ret2.active true, pause);
+DriverManager(pause, write f2.active true, pause, write ret1.active true, pause, write ret2.active true, pause);
 "
 
 %file IN1
