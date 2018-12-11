@@ -507,9 +507,11 @@ class RWLock { public:
 
     inline void read_begin() {
         uint32_t current_refcnt;
-        do {
-            current_refcnt = _refcnt;
-        } while ((int32_t)current_refcnt < 0 || (_refcnt.compare_swap(current_refcnt,current_refcnt+1) != current_refcnt));
+        current_refcnt = _refcnt;
+        while ((int32_t)current_refcnt < 0 || (_refcnt.compare_swap(current_refcnt,current_refcnt+1) != current_refcnt))  {
+		click_relax_fence();
+		current_refcnt = _refcnt;
+        };
     }
 
     inline void read_end() {
@@ -523,6 +525,48 @@ class RWLock { public:
 
     inline void write_begin() {
         while (_refcnt.compare_swap(0,-1) != 0) click_relax_fence();
+    }
+
+    /**
+     * Current limitation : only one thread can call write_begin_prio
+     */
+    inline void write_begin_prio() {
+	uint32_t current_refcnt;
+	retry:
+        if ((current_refcnt = _refcnt.compare_swap(0,-1)) != 0) {
+		assert(current_refcnt > -65536);
+		if (current_refcnt < 0) {
+			if (_refcnt.compare_swap(current_refcnt, current_refcnt - 65536) == current_refcnt) {
+				//We marked we asked to get the write
+				while ((current_refcnt = _refcnt) != -32768) { //-32768 -> ready to give the lock
+					click_relax_fence();
+				}
+				_refcnt = -1;
+				return;
+			} else { //_refcnt has changed
+				goto retry;
+			}
+		} else {
+			click_relax_fence();
+			goto retry;
+		}
+		//Unreachable
+        }
+    }
+
+    //Allows other writers to enter if need be
+    //You must hold only a single reference !
+    inline void write_relax() {
+	uint32_t current_refcnt;
+
+	current_refcnt = _refcnt;
+	if (current_refcnt < -65536) { //Someone wants it !
+		assert((current_refcnt + 65536 + 1 - 32768) == -32768);
+		_refcnt = -32768;
+			click_relax_fence();
+			//Re-acquire
+			write_begin();
+	}
     }
 
     inline bool write_attempt() {
