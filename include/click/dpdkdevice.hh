@@ -71,8 +71,9 @@ public:
     struct DevInfo {
         inline DevInfo() :
             vendor_id(PCI_ANY_ID), vendor_name(), device_id(PCI_ANY_ID), driver(0),
-            rx_queues(0,false), tx_queues(0,false), promisc(false), n_rx_descs(0),
-            n_tx_descs(0),
+            rx_queues(0,false), tx_queues(0,false),
+            promisc(false), vlan_filter(false),
+            n_rx_descs(0), n_tx_descs(0),
             init_mac(), init_mtu(0), init_fc_mode(FC_UNSET) {
             rx_queues.reserve(128);
             tx_queues.reserve(128);
@@ -98,6 +99,7 @@ public:
         Vector<bool> rx_queues;
         Vector<bool> tx_queues;
         bool promisc;
+        bool vlan_filter;
         unsigned n_rx_descs;
         unsigned n_tx_descs;
         EtherAddress init_mac;

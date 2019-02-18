@@ -374,6 +374,11 @@ int DPDKDevice::initialize_device(ErrorHandler *errh)
 
 #if RTE_VERSION >= RTE_VERSION_NUM(18,02,0,0)
     rx_conf.offloads = dev_conf.rxmode.offloads;
+    if (info.vlan_filter) {
+        rx_conf.offloads |= DEV_RX_OFFLOAD_VLAN_FILTER;
+    } else {
+        rx_conf.offloads &= ~DEV_RX_OFFLOAD_VLAN_FILTER;
+    }
 #endif
 
     struct rte_eth_txconf tx_conf;
