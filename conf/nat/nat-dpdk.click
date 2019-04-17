@@ -9,15 +9,15 @@
  */
 
 define(
- $iface0    0,
- $iface1    1,
+ $iface0    1,
+ $iface1    0,
  $queueSize 1024,
  $burst     32
 );
 
 AddressInfo(
-    lan_interface    192.168.56.128     00:0c:29:64:de:a1,
-    wan_interface    10.1.0.128         00:0c:29:64:de:ab
+    lan_interface    192.168.6.2   10.0.0.0/8        90:e2:ba:55:14:11,
+    wan_interface    192.168.4.10  192.168.4.10/27   90:e2:ba:55:14:10
 );
 
 // Module's I/O
@@ -52,11 +52,15 @@ class_left[0] -> ARPResponder(lan_interface) -> nicOut0;
 class_left[1] -> [1]arpq_left;
 class_left[2] -> Strip(14)-> CheckIPHeader -> ip_rw_l;
 
-ip_rw_l[0] -> [0]tcp_rw;    //Rewrite the packet and foward to right interface
-ip_rw_l[1] -> [0]udp_rw;
+//ip_rw_l[0] -> [0]tcp_rw;    //Rewrite the packet and foward to wan interface
+//ip_rw_l[1] -> [0]udp_rw;
 
-tcp_rw[0] -> arpq_right[0] -> nicOut1;
-udp_rw[0] -> arpq_right[0] -> nicOut1;
+ip_rw_l[0] -> IPPrint(ip_rw_l0) -> [0]tcp_rw;    //Rewrite the packet and foward to wan interface
+ip_rw_l[1] -> IPPrint(ip_rw_l1) -> [0]udp_rw;
+
+
+tcp_rw[0]  -> nicOut1;
+udp_rw[0]  -> nicOut1;
 
 nicIn1 -> class_right;
 
@@ -64,12 +68,15 @@ class_right[0] -> ARPResponder(wan_interface) -> nicOut1;
 class_right[1] -> [1]arpq_right;
 class_right[2] -> Strip(14)-> CheckIPHeader -> ip_rw_r;
 
-ip_rw_r[0] -> [1]tcp_rw;   //If we have the mapping, forward the packet to left interface
-ip_rw_r[1] -> [1]udp_rw;
+//ip_rw_r[0] -> [1]tcp_rw;   //If we have the mapping, forward the packet to lan interface
+//ip_rw_r[1] -> [1]udp_rw;
 
+ip_rw_r[0] -> IPPrint(ip_rw_r0) -> [1]tcp_rw;   //If we have the mapping, forward the packet to lan interface
+ip_rw_r[1] -> IPPrint(ip_rw_r1) -> [1]udp_rw;
 
-tcp_rw[1] -> arpq_left[0] -> nicOut0;
-udp_rw[1] -> arpq_left[0] -> nicOut0;
+tcp_rw[1] -> nicOut0;
+udp_rw[1] -> nicOut0;
+
 
 //---------------------icmp error----------------------
 // Rewriting rules for ICMP error packets
