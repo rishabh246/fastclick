@@ -44,8 +44,8 @@ ip_rw_l :: IPClassifier(proto tcp, proto udp, -);
 ip_rw_r :: IPClassifier(proto tcp, proto udp, -);
 
 rwpattern :: IPRewriterPatterns(NAT wan_interface 1-65535 - -);
-tcp_rw :: TCPRewriter(pattern NAT 0 1, pass 1);
-udp_rw :: UDPRewriter(pattern NAT 0 1, pass 1);
+tcp_rw :: TCPRewriter(pattern NAT 0 1, pass 1, MAPPING_CAPACITY 65536);
+udp_rw :: UDPRewriter(pattern NAT 0 1, pass 1, MAPPING_CAPACITY 65536);
 
 nicIn0 -> class_left;
 
