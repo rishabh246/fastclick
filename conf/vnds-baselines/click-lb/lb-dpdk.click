@@ -94,20 +94,20 @@ class_left[0] -> ARPResponder(lan_interface) -> nicOut0;
 class_left[1] -> [1]arpq_left;
 class_left[2] -> Strip(14)-> CheckIPHeader -> ip_rw_l;
 
-//ip_rw_l[0] -> [0]tcp_rw;    //Rewrite the packet and foward to wan interface
-//ip_rw_l[1] -> [0]udp_rw;
+ip_rw_l[0] -> [0]tcp_rw;    //Rewrite the packet and foward to wan interface
+ip_rw_l[1] -> [0]udp_rw;
 
 //For debugging
-ip_rw_l[0] -> IPPrint(ip_rw_l0) -> [0]tcp_rw;    //Rewrite the packet and foward to wan interface
-ip_rw_l[1] -> IPPrint(ip_rw_l1) -> [0]udp_rw;
+//ip_rw_l[0] -> IPPrint(ip_rw_l0) -> [0]tcp_rw;    //Rewrite the packet and foward to wan interface
+//ip_rw_l[1] -> IPPrint(ip_rw_l1) -> [0]udp_rw;
 
 
-//tcp_rw[0]  -> nicOut1;
-//udp_rw[0]  -> nicOut1;
+tcp_rw[0]  -> nicOut1;
+udp_rw[0]  -> nicOut1;
 
 //For debugging
-tcp_rw[0]  -> IPPrint(tcp_rw0) -> nicOut1;
-udp_rw[0]  -> IPPrint(udp_rw0) -> nicOut1;
+//tcp_rw[0]  -> IPPrint(tcp_rw0) -> nicOut1;
+//udp_rw[0]  -> IPPrint(udp_rw0) -> nicOut1;
 
 nicIn1 -> class_right;
 
@@ -115,19 +115,19 @@ class_right[0] -> ARPResponder(wan_interface) -> nicOut1;
 class_right[1] -> [1]arpq_right;
 class_right[2] -> Strip(14)-> CheckIPHeader -> ip_rw_r;
 
-//ip_rw_r[0] -> [1]tcp_rw;   //If we have the mapping, forward the packet to lan interface
-//ip_rw_r[1] -> [1]udp_rw;
+ip_rw_r[0] -> [1]tcp_rw;   //If we have the mapping, forward the packet to lan interface
+ip_rw_r[1] -> [1]udp_rw;
 
 //For debugging
-ip_rw_r[0] -> IPPrint(ip_rw_r0) -> [1]tcp_rw;   //If we have the mapping, forward the packet to lan interface
-ip_rw_r[1] -> IPPrint(ip_rw_r1) -> [1]udp_rw;
+//ip_rw_r[0] -> IPPrint(ip_rw_r0) -> [1]tcp_rw;   //If we have the mapping, forward the packet to lan interface
+//ip_rw_r[1] -> IPPrint(ip_rw_r1) -> [1]udp_rw;
 
-//tcp_rw[1] -> nicOut0;
-//udp_rw[1] -> nicOut0;
+tcp_rw[1] -> nicOut0;
+udp_rw[1] -> nicOut0;
 
 //For debugging
-tcp_rw[1]  -> IPPrint(tcp_rw1) -> nicOut0;
-udp_rw[1]  -> IPPrint(udp_rw1) -> nicOut0;
+//tcp_rw[1]  -> IPPrint(tcp_rw1) -> nicOut0;
+//udp_rw[1]  -> IPPrint(udp_rw1) -> nicOut0;
 
 //---------------------icmp error----------------------
 // Rewriting rules for ICMP error packets
