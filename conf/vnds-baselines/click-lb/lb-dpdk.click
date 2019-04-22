@@ -60,6 +60,9 @@ class_right :: Classifier(12/0806 20/0001,  //ARP query
 
 arpq_right :: ARPQuerier(wan_interface) -> nicOut1; //The packet will go to wan interface
 
+ee_left :: EnsureEther(0x0800, 1:1:1:1:1:0,90:e2:ba:55:14:10);
+ee_right :: EnsureEther(0x0800, 1:1:1:1:1:1,90:e2:ba:55:14:11); 
+
 ip_rw_l :: IPClassifier(proto tcp, proto udp, -);
 ip_rw_r :: IPClassifier(proto tcp, proto udp, -);
 
@@ -101,9 +104,8 @@ ip_rw_l[1] -> [0]udp_rw;
 //ip_rw_l[0] -> IPPrint(ip_rw_l0) -> [0]tcp_rw;    //Rewrite the packet and foward to wan interface
 //ip_rw_l[1] -> IPPrint(ip_rw_l1) -> [0]udp_rw;
 
-
-tcp_rw[0]  -> nicOut1;
-udp_rw[0]  -> nicOut1;
+tcp_rw[0]   -> ee_right[0] -> nicOut1;
+udp_rw[0]   -> ee_right[0] -> nicOut1;
 
 //For debugging
 //tcp_rw[0]  -> IPPrint(tcp_rw0) -> nicOut1;
@@ -122,8 +124,8 @@ ip_rw_r[1] -> [1]udp_rw;
 //ip_rw_r[0] -> IPPrint(ip_rw_r0) -> [1]tcp_rw;   //If we have the mapping, forward the packet to lan interface
 //ip_rw_r[1] -> IPPrint(ip_rw_r1) -> [1]udp_rw;
 
-tcp_rw[1] -> nicOut0;
-udp_rw[1] -> nicOut0;
+tcp_rw[1]   -> ee_left[0] -> nicOut0;
+udp_rw[1]   -> ee_left[0] -> nicOut0;
 
 //For debugging
 //tcp_rw[1]  -> IPPrint(tcp_rw1) -> nicOut0;
