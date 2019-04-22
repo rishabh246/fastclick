@@ -10,8 +10,8 @@
  */
 
 define(
- $iface0    1,
- $iface1    0,
+ $iface0    0,
+ $iface1    1,
  $queueSize 1024,
  $burst     32
 );
