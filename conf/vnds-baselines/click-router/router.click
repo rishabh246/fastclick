@@ -30,10 +30,10 @@ nicOut1 :: ToDPDKDevice  ($iface1, IQUEUE $queueSize, BURST $burst);
 
 lpm :: DirectIPLookup( /* Insert routes here */
                        18.26.4.24/32 0, /* Own address */
-					   10.0.0.1/16 2,
-					   10.7.0.0/16 2,
-					   192.168.4.10/32 1 /* Tested address */
-                       );
+                       10.0.0.1/16 2,
+                       10.7.0.0/16 2,
+                       192.168.4.10/32 1 /* Tested address */
+                     );
 ee_left :: EnsureEther(0x0800, 1:1:1:1:1:0,90:e2:ba:55:14:10);
 ee_right :: EnsureEther(0x0800, 1:1:1:1:1:0,90:e2:ba:55:14:11);
 
